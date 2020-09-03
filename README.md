@@ -1,12 +1,12 @@
-Crazy Eights Slot Machine<p>
-(C)2020 Dan Richter(RCS)
+Crazy Eights Slot Machine<br>
+(C)2020 Dan Richter(RCS)<p>
 
-Dan Richter
-aka Black Panther
-dan@castlerockbbs.com
-telnet://bbs.castlerockbbs.com
-http://www.castlerockbbs.com
-https://github.com/DRPanther
+Dan Richter<br>
+aka Black Panther<br>
+dan@castlerockbbs.com<br>
+telnet://bbs.castlerockbbs.com<br>
+http://www.castlerockbbs.com<br>
+https://github.com/DRPanther<br>
 
 -=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -24,17 +24,17 @@ information from the dropfile.
 
 For example:
 
-#!/bin/bash
-cd ~/doors/slots
-cp ~/mystic/temp%1/dorinfo1.def ~/doors/slots
-./slotmachine
+#!/bin/bash<br>
+cd ~/doors/slots<br>
+cp ~/mystic/temp%1/dorinfo1.def ~/doors/slots<br>
+./slotmachine<p>
 
 That's it! If you would like a dos/windows example:
 
-c:
-cd \doors\slots
-copy c:\mystic\temp%1\dorinfo1.def c:\doors\slots\
-slotmachine
+c:<br>
+cd \doors\slots<br>
+copy c:\mystic\temp%1\dorinfo1.def c:\doors\slots\<br>
+slotmachine<p>
 
 Simple! :)
 
@@ -54,25 +54,25 @@ drop files.
 
 File included:
 
-slotmachine (linux) or slotmachine.exe (Windows)
-install.txt - This file. :)
-slots.ans
-slotin.ans
-file_id.diz
+slotmachine (linux) or slotmachine.exe (Windows)<br>
+install.txt - This file. :)<br>
+slots.ans<br>
+slotin.ans<br>
+file_id.diz<p>
 
 Files created by the program:
 
-player.dat - Players info
-slotplyr.idx - Players Index file
-slotplyr.txt - Top Players score file
-makefile - Used to compile the source code
+player.dat - Players info<br>
+slotplyr.idx - Players Index file<br>
+slotplyr.txt - Top Players score file<br>
+makefile - Used to compile the source code<p>
 
 Source code:
 
-main.c - Main program code
-numbers.h - Header file
-OpenDoor.h - OpenDoors header file
-libODoors.a - OpenDoors library file
+main.c - Main program code<br>
+numbers.h - Header file<br>
+OpenDoor.h - OpenDoors header file<br>
+libODoors.a - OpenDoors library file<p>
 
 -=-=-=-=-=-=-=-=-=-=-=-=-
 
