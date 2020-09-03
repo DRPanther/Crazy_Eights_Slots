@@ -1,5 +1,7 @@
 Crazy Eights Slot Machine<br>
 (C)2020 Dan Richter(RCS)<p>
+  
+[![Build Status](https://travis-ci.com/DRPanther/Crazy_Eights_Slots.svg?branch=master)](https://travis-ci.com/DRPanther/Crazy_Eights_Slots)
 
 Dan Richter<br>
 aka Black Panther<br>
