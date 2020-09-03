@@ -25,7 +25,6 @@ information from the dropfile.
 For example:
 
 #!/bin/bash
-
 cd ~/doors/slots
 cp ~/mystic/temp%1/dorinfo1.def ~/doors/slots
 ./slotmachine
