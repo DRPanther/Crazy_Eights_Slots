@@ -1,6 +1,5 @@
 language: C
 os:
  - linux
- - Windows
 compiler: gcc
 script: make
