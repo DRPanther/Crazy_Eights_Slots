@@ -1,4 +1,4 @@
-Crazy Eights Slot Machine
+Crazy Eights Slot Machine\r\n
 (C)2020 Dan Richter(RCS)
 
 Dan Richter
