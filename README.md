@@ -6,10 +6,10 @@ Crazy Eights Slot Machine<br>
 
 Dan Richter<br>
 aka Black Panther<br>
-dan@castlerockbbs.com<br>
-telnet://bbs.castlerockbbs.com<br>
-http://www.castlerockbbs.com<br>
-https://github.com/DRPanther<br>
+<dan@castlerockbbs.com><br>
+<telnet://bbs.castlerockbbs.com><br>
+<http://www.castlerockbbs.com><br>
+<https://github.com/DRPanther><br>
 
 -=-=-=-=-=-=-=-=-=-=-=-=-
 
