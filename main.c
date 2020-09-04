@@ -12,11 +12,11 @@
 
 #define PROGRAM_NAME "Crazy Eights Slot Machine"
 #define VERSION_MAJOR 0
-#define VERSION_MINOR 1
+#define VERSION_MINOR 2
 #ifndef VERSION_TYPE
 #define VERSION_TYPE "alpha"
 #endif // VERSION_TYPE
-#define VERSION_DAY 02
+#define VERSION_DAY 04
 #define VERSION_MONTH "SEP"
 #define VERSION_YEAR 2020
 
