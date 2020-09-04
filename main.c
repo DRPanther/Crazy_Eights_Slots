@@ -1,4 +1,23 @@
 /*
+    Crazy Eights Slot Machine door game for ansi BBSs
+    Copyright (C) 2020  Dan Richter(RCS)
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+	-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
     Original code written by Camron Conway - Used without permission
 
     Added 4th reel to slot machine
@@ -7,12 +26,15 @@
     Added comma seperated numbers for readability
     Added $1billion limit, to avoid issues with integers
     Added User listing and top player list
+	Added additional ifdef statements to properly handle command line parameters
+	Removed commented test lines from code
+	Added license to code
 
 */
 
 #define PROGRAM_NAME "Crazy Eights Slot Machine"
 #define VERSION_MAJOR 0
-#define VERSION_MINOR 2
+#define VERSION_MINOR 3
 #ifndef VERSION_TYPE
 #define VERSION_TYPE "alpha"
 #endif // VERSION_TYPE
@@ -68,7 +90,6 @@ int main(int argc, char *argv[])
 #endif
 {
 #ifdef ODPLAT_WIN32
-   /* In Windows, pass in nCmdShow value to OpenDoors. */
    od_control.od_cmd_show = nCmdShow;
 #endif
 #ifdef ODPLAT_WIN32
@@ -78,16 +99,13 @@ int main(int argc, char *argv[])
 #endif
  
     od_init();
-    //struct PlyrRec otherplayer;
     int playerBet, betWinning, winType, sumTotal;
     int slot1, slot2, slot3, slot4;
     char temp[40];
     srand(time(NULL));
     od_send_file("slotin");
-    //od_printf("\r\n\n\n");
     od_set_cursor(17,1);
     centerText(PROGRAM_NAME,78);
-    //od_printf("\r\n");
     sprintf(temp,"ver %d.%d %s",VERSION_MAJOR,VERSION_MINOR,VERSION_TYPE);
     od_set_cursor(19,1);
     centerText(temp,78);
@@ -97,19 +115,13 @@ int main(int argc, char *argv[])
     strcpy(Plyr.Name,od_control_get()->user_name);
     if (!load_player())
     {
-
-        //if (!scan_for_player(Plyr.Name,&otherplayer))
-        //{
-            add_player_idx();
-            Plyr.Index=get_player_idx();
-            SavePlyr();
-        //}
+      add_player_idx();
+      Plyr.Index=get_player_idx();
+      SavePlyr();
     }
-    //else SavePlyr();
     od_get_key(TRUE);
     od_clr_scr();
     sumTotal = 1000;
-    //sumTotal = sumStart();              //removed option for starting money
     od_send_file("slots");
     od_set_cursor(20,1);
     od_printf("Your current total is $1,000");
@@ -117,9 +129,6 @@ int main(int argc, char *argv[])
     {
     playerBet = bidMaker(&sumTotal);
     slot(&slot1, &slot2, &slot3, &slot4);
-    //slot1=slot2=slot3=slot4=7;   //testing
-    //slot1=slot2;                 //testing
-    //slot3=4;                     //testing
     betWinning = slotWinning(slot1, slot2, slot3, slot4, playerBet, &winType);
     sumTotal = sumTotal+betWinning;
     slotPrint(sumTotal, betWinning, slot1, slot2, slot3, slot4, winType);
@@ -150,31 +159,6 @@ void centerText(char *text, int fieldWidth)
     od_printf("%*s%s%*s\n",padlen,"",text,padlen,"");
 }
 
-int sumStart(void)  // only for testing - will start at 1000 for all players
-{
-    int sum;
-    int checkSum = 0;
-    char sumstring[7];
-    while(checkSum == 0)
-    {
-        od_printf("\n\rHow many dollars do you want to start with (0 to quit)? ");
-        //scanf("%d", &sum);
-        od_input_str(sumstring,6,'0','9');
-        sum=atoi(sumstring);
-        if(sum < 0)
-            od_printf("ERROR: Enter at least one dollar or zero if you don't want to play.");
-        else if (sum == 0)
-            {
-            od_printf("The slot machine stares at you, silently judging as you walk away.");
-            SavePlyr();
-            gameExit(0);
-            }
-        else
-            checkSum++;
-    }
-    return sum;
-}
-
 int bidMaker(int* sumT)
 {
     int checkBid = 0;
@@ -183,9 +167,7 @@ int bidMaker(int* sumT)
     while (checkBid == 0)
         {
         od_printf("\r\nHow much would you like to bet (enter 0 to cash out)? ");//, *sumT);
-        //scanf("%d", &betAmount);
         od_input_str(betstring,6,'0','9');
-        //if (betstring=="NULL") betstring="100";
         betAmount=atoi(betstring);
         if (betAmount < 0)
             od_printf("\n\rThat is an incorrect bid");
@@ -366,8 +348,6 @@ void slotPrint(int sum, int betW, int s1, int s2, int s3, int s4, int winPrint)
     od_printf("%d",s3);
     od_set_cursor(13,48);
     od_printf("%d`white`",s4);
-    //od_set_cursor(1,10);
-    //od_printf("%s",number81);
     displaynumbers(s1,6,31);
     displaynumbers(s2,6,37);
     displaynumbers(s3,6,43);
@@ -615,18 +595,6 @@ char *substring(char *string, int position, int length)
   return pointer;
 }
 
-/*int comparator(const void * a, const void * b)
-{
-    //return strcmp(((struct PlyrRec*)p)->Score,
-    //              ((struct PlyrRec*)q)->Score);
-    //const int *ip = (const int *)p;
-    const int *iq = (const int *)q;
-    return *ip-*iq;//
-    if(a < b) return 0;
-    return 1;
-    //return ( *(int*)a - *(int*)b );
-}*/
-
 void listplayers()          //Creates list to show of other players - Also creates ascii file with same info
 {
   int x=1;
@@ -640,7 +608,6 @@ void listplayers()          //Creates list to show of other players - Also creat
   fptr = fopen(PlyrFile,"rb");
   fptr2 = fopen("slotplyr.txt","w");
   if (!fptr || !fptr2) gameExit(-1);
-  //size_t players_len = get_total_idx();
   while (fread(&PlyrInfo, sizeof(struct PlyrRec), 1, fptr) == 1)
   {
       strcpy(Players[y].Name,PlyrInfo.Name);
@@ -662,7 +629,6 @@ void listplayers()          //Creates list to show of other players - Also creat
   if (get_total_idx() > 15) total_records=15;
   else total_records=get_total_idx();
   bubble_sort(Players,get_total_idx());
-  //qsort((void*)Players,get_total_idx(),sizeof(PlyrInfo),comparator);
   for (x=0;x<total_records;x++)
   {
     od_printf("`blue`  %-42s $%-2s\r\n`white`",Players[x].Name,goldconvert(Players[x].Score));
@@ -670,7 +636,6 @@ void listplayers()          //Creates list to show of other players - Also creat
   }
   fclose(fptr);
   fclose(fptr2);
-  //gamepause();
 }
 
 void bubble_sort(struct PlyrRec list[80], int s)
@@ -739,7 +704,6 @@ int get_total_idx()
 {
     FILE *fptr;
     char buffer[256];
-    //char savefile[256];
     int idx = 0;
     fptr = fopen("slotplyr.idx","r");
     if (fptr != NULL)
@@ -821,6 +785,5 @@ void gameExit(int errorlevel)
     od_get_key(TRUE);
     listplayers();
     od_get_key(TRUE);
-    //od_printf("\r\n%d\r\n",errorlevel);
     od_exit(errorlevel,FALSE);
 }
