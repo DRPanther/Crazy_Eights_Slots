@@ -67,6 +67,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 int main(int argc, char *argv[])
 #endif
 {
+#ifdef ODPLAT_WIN32
+   /* In Windows, pass in nCmdShow value to OpenDoors. */
+   od_control.od_cmd_show = nCmdShow;
+#endif
+#ifdef ODPLAT_WIN32
+   od_parse_cmd_line(lpszCmdLine);
+#else
+   od_parse_cmd_line(argc, argv);
+#endif
+ 
     od_init();
     //struct PlyrRec otherplayer;
     int playerBet, betWinning, winType, sumTotal;
