@@ -3,6 +3,7 @@ branches:
   only:
     - master
 skip_tags: true
+image: Ubuntu
 install:
-  - make
+  - sh: make
 platform: Any CPU
