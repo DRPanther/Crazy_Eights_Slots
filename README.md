@@ -1,6 +1,7 @@
 Crazy Eights Slot Machine<br>
 (C)2020 Dan Richter(RCS)<p>
   
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/875ad877e7ed400080683c3dc448b271)](https://app.codacy.com/manual/DRPanther/Crazy_Eights_Slots?utm_source=github.com&utm_medium=referral&utm_content=DRPanther/Crazy_Eights_Slots&utm_campaign=Badge_Grade_Dashboard)
 [![Build Status](https://travis-ci.com/DRPanther/Crazy_Eights_Slots.svg?branch=master)](https://travis-ci.com/DRPanther/Crazy_Eights_Slots)
 [![Build status](https://ci.appveyor.com/api/projects/status/jdv40b3bfh7mwwna?svg=true)](https://ci.appveyor.com/project/DRPanther/crazy-eights-slots)
 
