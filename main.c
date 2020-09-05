@@ -26,15 +26,17 @@
     Added comma seperated numbers for readability
     Added $1billion limit, to avoid issues with integers
     Added User listing and top player list
-	Added additional ifdef statements to properly handle command line parameters
-	Removed commented test lines from code
-	Added license to code
+    Added additional ifdef statements to properly handle command line parameters
+    Removed commented test lines from code
+    Added license to code
+    Added better ANSI screen, thank you HSM
+    Added better large numbers, thanks again HSM :)
 
 */
 
 #define PROGRAM_NAME "Crazy Eights Slot Machine"
 #define VERSION_MAJOR 0
-#define VERSION_MINOR 3
+#define VERSION_MINOR 4
 #ifndef VERSION_TYPE
 #define VERSION_TYPE "alpha"
 #endif // VERSION_TYPE
