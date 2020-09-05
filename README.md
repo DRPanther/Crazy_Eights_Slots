@@ -1,5 +1,6 @@
 Crazy Eights Slot Machine<br>
-(C)2020 Dan Richter(RCS)<p>
+(C)2020 Dan Richter(RCS)<br>
+Special thanks to HSM(Gary) for contributing ANSI upgrades!<p>
   
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/875ad877e7ed400080683c3dc448b271)](https://app.codacy.com/manual/DRPanther/Crazy_Eights_Slots?utm_source=github.com&utm_medium=referral&utm_content=DRPanther/Crazy_Eights_Slots&utm_campaign=Badge_Grade_Dashboard)
 [![Build Status](https://travis-ci.com/DRPanther/Crazy_Eights_Slots.svg?branch=master)](https://travis-ci.com/DRPanther/Crazy_Eights_Slots)
@@ -7,10 +8,10 @@ Crazy Eights Slot Machine<br>
 
 Dan Richter<br>
 aka Black Panther<br>
-<dan@castlerockbbs.com><br>
-<telnet://bbs.castlerockbbs.com><br>
-<http://www.castlerockbbs.com><br>
-<https://github.com/DRPanther><br>
+dan@castlerockbbs.com<br>
+telnet://bbs.castlerockbbs.com<br>
+http://www.castlerockbbs.com<br>
+https://github.com/DRPanther<br>
 
 -=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -30,29 +31,31 @@ For example:
 
 #!/bin/bash<br>
 cd ~/doors/slots<br>
-cp ~/mystic/temp%1/dorinfo1.def ~/doors/slots<br>
-./slotmachine<p>
+cp $1 ~/doors/slots/dorinfo1.def<br>
+./slotmachine -D $1 -N $2<br>
+rm dorinfo1.def<p>
 
 That's it! If you would like a dos/windows example:
 
 c:<br>
 cd \doors\slots<br>
-copy c:\mystic\temp%1\dorinfo1.def c:\doors\slots\<br>
-slotmachine<p>
+copy %1 c:\doors\slots\dorinfo1.def<br>
+slotmachine -D %1 -N %2<br>
+del dorinfo1.def<p>
 
 Simple! :)
 
 Also, In Mystic, or whichever BBS program you use, when you call the door, 
 make sure you use the command of: 
 
-./slots.sh %3  //this passes the node number to the script file.
+./slots.sh %PDORINFO1.DEF %3  //this passes the node number to the script file.
 
 Or
 
-slots.bat %3
+slots.bat %PDORINFO1.DEF %3
 
-With this, the script/batch file will know which directory to look in for the
-drop files. 
+The %P in Mystic will expand to the nodes path where the dropfile DORINFO1.DEF
+is located. The %3 passes the node number.
 
 -=-=-=-=-=-=-=-=-=-=-=-=-
 
