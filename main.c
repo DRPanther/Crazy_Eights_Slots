@@ -40,7 +40,7 @@
 #ifndef VERSION_TYPE
 #define VERSION_TYPE "alpha"
 #endif // VERSION_TYPE
-#define VERSION_DAY 04
+#define VERSION_DAY 05
 #define VERSION_MONTH "SEP"
 #define VERSION_YEAR 2020
 
