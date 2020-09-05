@@ -1,12 +1,13 @@
-Crazy Eights Slot Machine
-(C)2020 Dan Richter(RCS)
-
-Dan Richter
-aka Black Panther
-dan@castlerockbbs.com
-telnet://bbs.castlerockbbs.com
-http://www.castlerockbbs.com
-https://github.com/DRPanther
+Crazy Eights Slot Machine<br>
+(C)2020 Dan Richter(RCS)<br>
+Special thanks to HSM(Gary) for contributing ANSI upgrades!<p>
+  
+Dan Richter<br>
+aka Black Panther<br>
+dan@castlerockbbs.com<br>
+telnet://bbs.castlerockbbs.com<br>
+http://www.castlerockbbs.com<br>
+https://github.com/DRPanther<br>
 
 -=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -24,56 +25,57 @@ information from the dropfile.
 
 For example:
 
-#!/bin/bash
-
-cd ~/doors/slots
-cp ~/mystic/temp%1/dorinfo1.def ~/doors/slots
-./slotmachine
+#!/bin/bash<br>
+cd ~/doors/slots<br>
+cp $1 ~/doors/slots/dorinfo1.def<br>
+./slotmachine -D $1 -N $2<br>
+rm dorinfo1.def<p>
 
 That's it! If you would like a dos/windows example:
 
-c:
-cd \doors\slots
-copy c:\mystic\temp%1\dorinfo1.def c:\doors\slots\
-slotmachine
+c:<br>
+cd \doors\slots<br>
+copy %1 c:\doors\slots\dorinfo1.def<br>
+slotmachine -D %1 -N %2<br>
+del dorinfo1.def<p>
 
 Simple! :)
 
 Also, In Mystic, or whichever BBS program you use, when you call the door, 
 make sure you use the command of: 
 
-./slots.sh %3  //this passes the node number to the script file.
+./slots.sh %PDORINFO1.DEF %3  //this passes the node number to the script file.
 
 Or
 
-slots.bat %3
+slots.bat %PDORINFO1.DEF %3
 
-With this, the script/batch file will know which directory to look in for the
-drop files. 
+The %P in Mystic will expand to the nodes path where the dropfile DORINFO1.DEF
+is located. The %3 passes the node number.
 
 -=-=-=-=-=-=-=-=-=-=-=-=-
 
 File included:
 
-slotmachine (linux) or slotmachine.exe (Windows)
-install.txt - This file. :)
-slots.ans
-slotin.ans
-file_id.diz
+slotmachine (linux) or slotmachine.exe (Windows)<br>
+install.txt - This file. :)<br>
+slots.ans<br>
+slotin.ans<br>
+file_id.diz<p>
 
 Files created by the program:
 
-player.dat - Players info
-slotplyr.idx - Players Index file
-slotplyr.txt - Top Players score file
-makefile - Used to compile the source code
+player.dat - Players info<br>
+slotplyr.idx - Players Index file<br>
+slotplyr.txt - Top Players score file<br>
+makefile - Used to compile the source code<p>
 
 Source code:
 
-main.c - Main program code
-numbers.h - Header file
-OpenDoor.h - OpenDoors header file
-libODoors.a - OpenDoors library file
+main.c - Main program code<br>
+numbers.h - Header file<br>
+OpenDoor.h - OpenDoors header file<br>
+libODoors.a - OpenDoors library file<p>
 
 -=-=-=-=-=-=-=-=-=-=-=-=-
 
