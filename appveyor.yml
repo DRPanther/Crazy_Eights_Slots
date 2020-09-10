@@ -5,5 +5,5 @@ init:
   - sh: sudo apt update
   - sh: sudo apt install make
 install:
-  - sh: make
+  - sh: make all
 platform: Any CPU
