@@ -72,14 +72,15 @@ Files created by the program:
 player.dat - Players info<br>
 slotplyr.idx - Players Index file<br>
 slotplyr.txt - Top Players score file<br>
-makefile - Used to compile the source code<p>
 
 Source code:
 
 main.c - Main program code<br>
 numbers.h - Header file<br>
 OpenDoor.h - OpenDoors header file<br>
-libODoors.a - OpenDoors library file<p>
+makefile - Used to compile the source code<br>
+ODoors62.dll - Windows Library file
+libODoors.a - Linux library file<p>
 
 -=-=-=-=-=-=-=-=-=-=-=-=-
 
@@ -89,6 +90,14 @@ included. It uses gcc, and works fine here on both Debian and Manjaro systems.
 Extract the source code into it's own directory, and just run 'make'. You can
 also run 'make clean', and it will remove all the object files and binaries
 from the directory.
+
+Options available for 'make'<br>
+* make all
+* make slotmachine
+* make clean
+* make check-syntax
+* make distribution
+* make help
 
 -=-=-=-=-=-=-=-=-=-=-=-=-
 
