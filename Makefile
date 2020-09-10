@@ -13,7 +13,7 @@ slotmachine: main.o
 main.o: main.c numbers.h
 	$(CC) $(CFLAGS) $(dbg) -c main.c
 
-.PHONY clean help check-syntax distribution
+.PHONY: clean help check-syntax distribution
 clean:
 	rm *.o slotmachine
 
