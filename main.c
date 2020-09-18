@@ -1,5 +1,5 @@
 /*
-    Crazy Eights Slot Machine door game for ansi BBSs
+    Crazy Eights Slot Machine door game for ANSI BBSs
     Copyright (C) 2020  Dan Richter(RCS)
 
     This program is free software; you can redistribute it and/or modify
@@ -19,70 +19,9 @@
 	-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
     Original code written by Camron Conway - Used without permission
-
-    Added 4th reel to slot machine
-    Converted to utilize OpenDoor
-    Added further winning options
-    Added comma seperated numbers for readability
-    Added $1billion limit, to avoid issues with integers
-    Added User listing and top player list
-    Added additional ifdef statements to properly handle command line parameters
-    Removed commented test lines from code
-    Added license to code
-    Added better ANSI screen, thank you HSM
-    Added better large numbers, thanks again HSM :)
-
 */
 
-#define PROGRAM_NAME "Crazy Eights Slot Machine"
-#define VERSION_MAJOR 0
-#define VERSION_MINOR 4
-#ifndef VERSION_TYPE
-#define VERSION_TYPE "alpha"
-#endif // VERSION_TYPE
-#define VERSION_DAY 05
-#define VERSION_MONTH "SEP"
-#define VERSION_YEAR 2020
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <time.h>
-#include "numbers.h"
-#include "OpenDoor.h"
-
-struct PlyrRec {
-    int Index;
-    char Name[32];
-    int Score;
-};
-
-struct PlyrRec Plyr;
-char PlyrFile[15]="player.dat";
-void slot(int* ax, int* bx, int* cx, int* dx);
-void slotPrint(int sum, int bet, int s1, int s2, int s3, int s4, int winPrint);
-int bidMaker(int* sumT);
-int slotWinning(int s1, int s2, int s3, int s4, int betA, int* winSum);
-int sumStart(void);
-char* goldconvert(int x);
-int findtotaldigits(unsigned long int no);
-void insert_substring(char *a, char *b, int position);
-char *substring(char *string, int position, int length);
-void gameExit(int errorlevel);
-void add_player_idx();
-int get_player_idx();
-int load_player();
-int scan_for_player(char *username, struct PlyrRec *Plyr);
-void SavePlyr();
-void SaveUser();
-int get_total_idx();
-void centerText(char *text, int fieldWidth);
-void bubble_sort(struct PlyrRec list[80], int s);
-
-char comma[20];
+#include "slotmachine.h"
 
 #ifdef ODPLAT_WIN32
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
@@ -92,6 +31,7 @@ int main(int argc, char *argv[])
 #endif
 {
 #ifdef ODPLAT_WIN32
+   /* In Windows, pass in nCmdShow value to OpenDoors. */
    od_control.od_cmd_show = nCmdShow;
 #endif
 #ifdef ODPLAT_WIN32
@@ -99,7 +39,6 @@ int main(int argc, char *argv[])
 #else
    od_parse_cmd_line(argc, argv);
 #endif
- 
     od_init();
     int playerBet, betWinning, winType, sumTotal;
     int slot1, slot2, slot3, slot4;
@@ -108,18 +47,18 @@ int main(int argc, char *argv[])
     od_send_file("slotin");
     od_set_cursor(17,1);
     centerText(PROGRAM_NAME,78);
-    sprintf(temp,"ver %d.%d %s",VERSION_MAJOR,VERSION_MINOR,VERSION_TYPE);
+    sprintf(temp,"ver %s",FULLVERSION_STRING);
     od_set_cursor(19,1);
     centerText(temp,78);
-    sprintf(temp,"    Compiled %d %s %d",VERSION_DAY,VERSION_MONTH,VERSION_YEAR);
+    sprintf(temp,"Compiled %s %s %s",DATE,MONTH,YEAR);
     od_set_cursor(20,1);
     centerText(temp,78);
     strcpy(Plyr.Name,od_control_get()->user_name);
     if (!load_player())
     {
-      add_player_idx();
-      Plyr.Index=get_player_idx();
-      SavePlyr();
+        add_player_idx();
+        Plyr.Index=get_player_idx();
+        SavePlyr();
     }
     od_get_key(TRUE);
     od_clr_scr();
@@ -131,6 +70,9 @@ int main(int argc, char *argv[])
     {
     playerBet = bidMaker(&sumTotal);
     slot(&slot1, &slot2, &slot3, &slot4);
+    //slot1=slot2=slot3=slot4=7;   //testing
+    //slot1=slot2;                 //testing
+    //slot3=4;                     //testing
     betWinning = slotWinning(slot1, slot2, slot3, slot4, playerBet, &winType);
     sumTotal = sumTotal+betWinning;
     slotPrint(sumTotal, betWinning, slot1, slot2, slot3, slot4, winType);
@@ -142,7 +84,7 @@ int main(int argc, char *argv[])
         od_printf("\n\rToo bad, you ran out of money. Better luck next time.\n\r");
         gameExit(0);
         }
-    if (sumTotal >= 1000000000)
+    if (sumTotal >= 1000000000) //avoid people breaking the game because of int limitations
         {
         if (Plyr.Score<sumTotal) Plyr.Score=sumTotal;
         SavePlyr();
@@ -155,10 +97,18 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-void centerText(char *text, int fieldWidth)
+void centerText(char *text, int fieldWidth)  //center text on the screen
 {
     int padlen=(fieldWidth - strlen(text))/2;
-    od_printf("%*s%s%*s\n",padlen,"",text,padlen,"");
+    od_printf("%*s%s%*s\n\r",padlen,"",text,padlen,"");
+}
+
+void centerTextfile(char *text, int fieldWidth, FILE* name)  //center text to write to text file
+{
+    char x[80];
+    int padlen=(fieldWidth - strlen(text))/2;
+    sprintf(x,"%*s%s%*s\r\n",padlen,"",text,padlen,"");
+    fprintf(name,x);
 }
 
 int bidMaker(int* sumT)
@@ -168,7 +118,7 @@ int bidMaker(int* sumT)
     char betstring[7];
     while (checkBid == 0)
         {
-        od_printf("\r\nHow much would you like to bet (enter 0 to cash out)? ");//, *sumT);
+        od_printf("\r\nHow much would you like to bet (enter 0 to cash out)? ");
         od_input_str(betstring,6,'0','9');
         betAmount=atoi(betstring);
         if (betAmount < 0)
@@ -219,7 +169,7 @@ void displaynumbers(int num,int x,int y)
             od_set_cursor(x+3,y);
             od_printf(number14);
             od_set_cursor(x+4,y);
-            od_printf(number15);
+            od_printf("%s`white dark black`",number15);
             break;
         }
     case 2:
@@ -233,13 +183,13 @@ void displaynumbers(int num,int x,int y)
             od_set_cursor(x+3,y);
             od_printf(number24);
             od_set_cursor(x+4,y);
-            od_printf(number25);
+            od_printf("%s`white dark black`",number25);
             break;
         }
     case 3:
         {
             od_set_cursor(x,y);
-            od_printf("`white dark black`%s",number31);
+            od_printf("`green dark black`%s",number31);
             od_set_cursor(x+1,y);
             od_printf(number32);
             od_set_cursor(x+2,y);
@@ -247,7 +197,7 @@ void displaynumbers(int num,int x,int y)
             od_set_cursor(x+3,y);
             od_printf(number34);
             od_set_cursor(x+4,y);
-            od_printf(number35);
+            od_printf("%s`white dark black`",number35);
             break;
         }
     case 4:
@@ -261,7 +211,7 @@ void displaynumbers(int num,int x,int y)
             od_set_cursor(x+3,y);
             od_printf(number44);
             od_set_cursor(x+4,y);
-            od_printf(number45);
+            od_printf("%s`white dark black`",number45);
             break;
         }
     case 5:
@@ -275,7 +225,7 @@ void displaynumbers(int num,int x,int y)
             od_set_cursor(x+3,y);
             od_printf(number54);
             od_set_cursor(x+4,y);
-            od_printf(number55);
+            od_printf("%s`white dark black`",number55);
             break;
         }
     case 6:
@@ -289,7 +239,7 @@ void displaynumbers(int num,int x,int y)
             od_set_cursor(x+3,y);
             od_printf(number64);
             od_set_cursor(x+4,y);
-            od_printf(number65);
+            od_printf("%s`white dark black`",number65);
             break;
         }
     case 7:
@@ -303,7 +253,7 @@ void displaynumbers(int num,int x,int y)
             od_set_cursor(x+3,y);
             od_printf(number74);
             od_set_cursor(x+4,y);
-            od_printf(number75);
+            od_printf("%s`white dark black`",number75);
             break;
         }
     case 8:
@@ -349,7 +299,7 @@ void slotPrint(int sum, int betW, int s1, int s2, int s3, int s4, int winPrint)
     od_set_cursor(13,43);
     od_printf("%d",s3);
     od_set_cursor(13,48);
-    od_printf("%d`white`",s4);
+    od_printf("%d`white dark black`",s4);
     displaynumbers(s1,6,31);
     displaynumbers(s2,6,37);
     displaynumbers(s3,6,43);
@@ -606,7 +556,8 @@ void listplayers()          //Creates list to show of other players - Also creat
   struct PlyrRec Players[30];
   FILE *fptr;
   FILE *fptr2;
-  char s[70];
+  char s[80];
+  char v[80];
   fptr = fopen(PlyrFile,"rb");
   fptr2 = fopen("slotplyr.txt","w");
   if (!fptr || !fptr2) gameExit(-1);
@@ -617,13 +568,15 @@ void listplayers()          //Creates list to show of other players - Also creat
       y++;
   }
   od_clr_scr();
-  strcpy(s,"  List of Players in Crazy Eights Slot Machine");
-  od_printf("`blue`%s",s);
-  od_printf("  Ver %d.%d %s\r\n\n",VERSION_MAJOR,VERSION_MINOR,VERSION_TYPE);
-  fprintf(fptr2,"%s",s);
-  fprintf(fptr2,"  Ver %d.%d %s\r\n\n",VERSION_MAJOR,VERSION_MINOR,VERSION_TYPE);
-  od_printf(" -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\r\n");
-  fprintf(fptr2," -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\r\n");
+  od_printf("`blue`");
+  strcpy(s,"List of Players in Crazy Eights Slot Machine");
+  centerText(s,78);
+  sprintf(v,"Ver %s %s",FULLVERSION_STRING,STATUS);
+  centerText(v,78);
+  centerTextfile(s,78,fptr2);
+  centerTextfile(v,78,fptr2);
+  od_printf("\n\r -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\r\n");
+  fprintf(fptr2,"\r\n -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\r\n");
   od_printf("  Name                                       Score\r\n");
   fprintf(fptr2,"  Name                                       Score\r\n");
   od_printf(" -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\r\n");
@@ -676,26 +629,25 @@ void add_player_idx()
 int get_player_idx()
 {
     FILE *fptr;
+    char buffer[256];
+    char savefile[256];
+    int idx = 0;
+    fptr = fopen("slotplyr.idx", "r");
 
-  char buffer[256];
-  char savefile[256];
-  int idx = 0;
-  fptr = fopen("slotplyr.idx", "r");
+    snprintf(savefile, 255, "%s+%s", od_control_get()->user_name, od_control_get()->user_handle);
 
-  snprintf(savefile, 255, "%s+%s", od_control_get()->user_name, od_control_get()->user_handle);
-
-  if (fptr != NULL)
+    if (fptr != NULL)
     {
-    fgets(buffer, 256, fptr);
-    while (!feof(fptr))
-    {
-      if (strncmp(buffer, savefile, strlen(savefile)) == 0)
-      {
+        fgets(buffer, 256, fptr);
+        while (!feof(fptr))
+        {
+            if (strncmp(buffer, savefile, strlen(savefile)) == 0)
+        {
         fclose(fptr);
         return idx;
-      }
-      idx++;
-      fgets(buffer, 256, fptr);
+    }
+    idx++;
+    fgets(buffer, 256, fptr);
     }
     fclose(fptr);
   }
@@ -724,62 +676,53 @@ int get_total_idx()
 
 int load_player()
 {
-  FILE *fptr;
-  Plyr.Index = get_player_idx();
-  if (Plyr.Index == -1)
+    FILE *fptr;
+    Plyr.Index = get_player_idx();
+    if (Plyr.Index == -1) return 0;
+    fptr = fopen(PlyrFile, "rb");
+    if (!fptr)
     {
-    return 0;
+        fprintf(stderr, "rcstdta.ply missing! please reset.\n");
+        od_exit(0, FALSE);
     }
-  fptr = fopen(PlyrFile, "rb");
-  if (!fptr)
-  {
-    fprintf(stderr, "rcstdta.ply missing! please reset.\n");
-    od_exit(0, FALSE);
-  }
-  fseek(fptr, sizeof(struct PlyrRec) * Plyr.Index, SEEK_SET);
-  if (fread(&Plyr, sizeof(struct PlyrRec), 1, fptr) < 1)
-  {
+    fseek(fptr, sizeof(struct PlyrRec) * Plyr.Index, SEEK_SET);
+    if (fread(&Plyr, sizeof(struct PlyrRec), 1, fptr) < 1)
+    {
+        fclose(fptr);
+        return 0;
+    }
     fclose(fptr);
-    return 0;
-  }
-  fclose(fptr);
-  return 1;
+    return 1;
 }
 
 int scan_for_player(char *username, struct PlyrRec *Plyr)
 {
-  FILE *fptr;
-  fptr = fopen(PlyrFile, "rb");
-  if (!fptr)
-  {
-    return 0;
-  }
-  while (fread(Plyr, sizeof(struct PlyrRec), 1, fptr) == 1)
-  {
+    FILE *fptr;
+    fptr = fopen(PlyrFile, "rb");
+    if (!fptr) return 0;
+    while (fread(Plyr, sizeof(struct PlyrRec), 1, fptr) == 1)
+    {
     if (strcasecmp(Plyr->Name, username) == 0)
     {
-      fclose(fptr);
-      return 1;
+        fclose(fptr);
+        return 1;
     }
-  }
-  fclose(fptr);
-  return 0;
+    }
+    fclose(fptr);
+    return 0;
 }
 
 void SavePlyr()
 {
-  #if defined(_MSC_VER) || defined(WIN32)
+    #if defined(_MSC_VER) || defined(WIN32)
     int fno = open("PlyrFile", O_WRONLY | O_CREAT | O_BINARY, 0644);
-  #else
+    #else
     int fno = open(PlyrFile, O_WRONLY | O_CREAT, 0644);
-  #endif // defined
-  if (fno < 0)
-  {
-    gameExit(-1);
-  }
-  lseek(fno, sizeof(struct PlyrRec) * Plyr.Index, SEEK_SET);
-  write(fno, &Plyr, sizeof(struct PlyrRec));
-  close(fno);
+    #endif // defined
+    if (fno < 0) gameExit(-1);
+    lseek(fno, sizeof(struct PlyrRec) * Plyr.Index, SEEK_SET);
+    write(fno, &Plyr, sizeof(struct PlyrRec));
+    close(fno);
 }
 
 void gameExit(int errorlevel)
