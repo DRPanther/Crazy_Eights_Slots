@@ -69,6 +69,7 @@ int main(int argc, char *argv[])
     while((sumTotal > 0) && (sumTotal < 1000000000))
     {
     playerBet = bidMaker(&sumTotal);
+    lastbet=playerBet;
     slot(&slot1, &slot2, &slot3, &slot4);
     //slot1=slot2=slot3=slot4=7;   //testing
     //slot1=slot2;                 //testing
@@ -115,11 +116,11 @@ int bidMaker(int* sumT)
 {
     int checkBid = 0;
     int betAmount;
-    char betstring[7];
+    char betstring[8];
     while (checkBid == 0)
         {
-        od_printf("\r\nHow much would you like to bet (enter 0 to cash out)? ");
-        od_input_str(betstring,6,'0','9');
+        od_printf("\r\nEnter you bet (0 to cash out - 1 to repeat bet)? ");
+        od_input_str(betstring,7,'0','9');
         betAmount=atoi(betstring);
         if (betAmount < 0)
             od_printf("\n\rThat is an incorrect bid");
@@ -137,10 +138,11 @@ int bidMaker(int* sumT)
             gameExit(0);
             }
         else
-            {
+        {
+            if (betAmount==1) betAmount=lastbet;
             *sumT = *sumT - betAmount;
             checkBid++;
-            }
+        }
     }
     return betAmount;
 }
@@ -154,7 +156,7 @@ void slot(int* ax, int* bx, int* cx, int* dx)
     return ;
 }
 
-void displaynumbers(int num,int x,int y)
+void displaynumbers(int num,int x,int y) //I'm sure there's a better way to do this
 {
     switch (num)
     {
@@ -294,15 +296,18 @@ void slotPrint(int sum, int betW, int s1, int s2, int s3, int s4, int winPrint)
     od_send_file("slots");
     od_set_cursor(13,33);
     od_printf("`red`%d",s1);
+    displaynumbers(s1,6,31);
+    od_sleep(500);
     od_set_cursor(13,38);
     od_printf("%d",s2);
+    displaynumbers(s2,6,37);
+    od_sleep(500);
     od_set_cursor(13,43);
     od_printf("%d",s3);
+    displaynumbers(s3,6,43);
+    od_sleep(500);
     od_set_cursor(13,48);
     od_printf("%d`white dark black`",s4);
-    displaynumbers(s1,6,31);
-    displaynumbers(s2,6,37);
-    displaynumbers(s3,6,43);
     displaynumbers(s4,6,49);
     od_set_cursor(15,34);
     if(winPrint < 8)
@@ -410,8 +415,6 @@ int slotWinning(int s1, int s2, int s3, int s4, int betA, int* winSum)
             else if (s3 == s2) temp2=s3;
             else if (s3 == s1) temp2=s3;
             else if (s2 == s1) temp2=s2;
-            od_set_cursor(20,1);
-            od_printf("%d %d",temp1,temp2);
             if ((temp1!=0) && (temp2!=0) && (temp1 != temp2))
             {
                 *winSum = 4;

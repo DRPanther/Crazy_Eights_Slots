@@ -1,4 +1,17 @@
 17 September 2020
+   released version 0.4.3 of Slot Machine
+
+     Change log:
+        -Updated: Prompt when entering bet
+
+17 September 2020
+   released version 0.4.3 of Slot Machine
+
+     Change log:
+        -Added: Added timing to make it more accurate
+        -Added: Added ability to bet 1 to repeat last bet
+
+17 September 2020
    released version 0.3.3 of Slot Machine
 
      Change log:
@@ -22,4 +35,5 @@
 
      Change log:
         -Added: Auto versioning
+
 

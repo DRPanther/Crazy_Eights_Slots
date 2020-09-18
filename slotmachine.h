@@ -18,9 +18,9 @@ struct PlyrRec {
     int Index;
     char Name[32];
     int Score;
-};
+}Plyr;
 
-struct PlyrRec Plyr;
+//struct PlyrRec Plyr;
 char PlyrFile[15]="player.dat";
 void slot(int* ax, int* bx, int* cx, int* dx);
 void slotPrint(int sum, int bet, int s1, int s2, int s3, int s4, int winPrint);
@@ -43,5 +43,6 @@ void centerText(char *text, int fieldWidth);
 void bubble_sort(struct PlyrRec list[80], int s);
 
 char comma[20];
+int lastbet=0;
 
 #endif // SLOTMACHINE_H_INCLUDED
