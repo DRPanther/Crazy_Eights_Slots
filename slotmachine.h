@@ -10,7 +10,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <time.h>
-#include "slotmachine/numbers.h"
+#include "numbers.h"
 #include "OpenDoor.h"
 #include "version.h"
 
