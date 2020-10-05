@@ -40,6 +40,7 @@ int main(int argc, char *argv[])
    od_parse_cmd_line(argc, argv);
 #endif
     od_init();
+    char action;
     int playerBet, betWinning, winType, sumTotal;
     int slot1, slot2, slot3, slot4;
     char temp[40];
@@ -53,10 +54,11 @@ int main(int argc, char *argv[])
     sprintf(temp,"Compiled %s %s %s",DATE,MONTH,YEAR);
     od_set_cursor(20,1);
     centerText(temp,78);
-    strcpy(Plyr.Name,od_control_get()->user_name);
+    strncpy(Plyr.Name,od_control_get()->user_name, 32);
     if (!load_player())
     {
         add_player_idx();
+        Plyr.Score=0;
         Plyr.Index=get_player_idx();
         SavePlyr();
     }
@@ -65,42 +67,90 @@ int main(int argc, char *argv[])
     sumTotal = 1000;
     od_send_file("slots");
     od_set_cursor(20,1);
-    od_printf("Your current total is $1,000");
+    playerBet = 0;
+
     while((sumTotal > 0) && (sumTotal < 1000000000))
     {
-    playerBet = bidMaker(&sumTotal);
-    slot(&slot1, &slot2, &slot3, &slot4);
-    //slot1=slot2=slot3=slot4=7;   //testing
-    //slot1=slot2;                 //testing
-    //slot3=4;                     //testing
-    betWinning = slotWinning(slot1, slot2, slot3, slot4, playerBet, &winType);
-    sumTotal = sumTotal+betWinning;
-    slotPrint(sumTotal, betWinning, slot1, slot2, slot3, slot4, winType);
+    
+
+    od_set_cursor(20, 1);
+    goldconvert(sumTotal);
+    od_printf("Your current total is $%s, Your current bet is ", comma);
+    goldconvert(playerBet);
+    od_printf("$%s", comma);
+    od_clr_line();
+    od_set_cursor(21,1);
+    od_printf("Press SPACE to spin, P to Place Bet or Q to Cash Out");
+    od_clr_line();
+
+    action = od_get_key(TRUE);
+
+    od_set_cursor(22, 1);
+    od_clr_line();
+    od_set_cursor(23, 1);
+    od_clr_line();
+
+    if (tolower(action) == 'p') {
+        playerBet = bidMaker(sumTotal);
+    } else if (tolower(action) == 'q') {
+        if (Plyr.Score<sumTotal) Plyr.Score=sumTotal;
+        SavePlyr();
+        od_printf("\r\n");
+        od_printf("Cash out: $%d. ", sumTotal);
+        od_printf("Hope you enjoy monopoly money.\r\n");
+        od_printf("Exiting\r\n");
+        gameExit(0);
+    } else if (action == ' ') {
+        if (playerBet == 0) {
+            od_set_cursor(22, 1);
+            od_printf("Place a bet first!");
+            od_clr_line();
+        } else if (playerBet > sumTotal) {
+            od_set_cursor(22, 1);
+            od_printf("You can't afford that!");
+            od_clr_line();
+        } else {
+            sumTotal -= playerBet;
+            slot(&slot1, &slot2, &slot3, &slot4);
+            //slot1=slot2=slot3=slot4=7;   //testing
+            //slot1=slot2;                 //testing
+            //slot3=4;                     //testing
+            betWinning = slotWinning(slot1, slot2, slot3, slot4, playerBet, &winType);
+            sumTotal = sumTotal+betWinning;
+            slotPrint(sumTotal, betWinning, slot1, slot2, slot3, slot4, winType);
+        }
+    }
     }
     if (sumTotal == 0)
-        {
+    {
         if (Plyr.Score<sumTotal) Plyr.Score=sumTotal;
         SavePlyr();
-        od_printf("\n\rToo bad, you ran out of money. Better luck next time.\n\r");
+        od_set_cursor(22,1);
+        od_printf("Too bad, you ran out of money. Better luck next time.");
+        od_clr_line();
         gameExit(0);
-        }
+        
+    }
     if (sumTotal >= 1000000000) //avoid people breaking the game because of int limitations
-        {
+    {
         if (Plyr.Score<sumTotal) Plyr.Score=sumTotal;
         SavePlyr();
-        od_printf("\r\nYou broke the bank! They will need to refill the machine now. \r\n");
+        od_set_cursor(21,1);
+        od_printf("You broke the bank! They will need to refill the machine now.");
+        od_clr_line();
         goldconvert(sumTotal);
-        od_printf("You cashed out a total of $%s! GREAT JOB!!!\r\n",comma);
+        od_set_cursor(22,1);
+        od_printf("You cashed out a total of $%s! GREAT JOB!!!",comma);
+        od_clr_line();
         gameExit(0);
-        }
-    else
-    return 0;
+        
+    }
 }
 
 void centerText(char *text, int fieldWidth)  //center text on the screen
 {
     int padlen=(fieldWidth - strlen(text))/2;
-    od_printf("%*s%s%*s\n\r",padlen,"",text,padlen,"");
+    od_printf("%*s%s%*s\r\n",padlen,"",text,padlen,"");
 }
 
 void centerTextfile(char *text, int fieldWidth, FILE* name)  //center text to write to text file
@@ -111,34 +161,32 @@ void centerTextfile(char *text, int fieldWidth, FILE* name)  //center text to wr
     fprintf(name,x);
 }
 
-int bidMaker(int* sumT)
+int bidMaker(int sumT)
 {
     int checkBid = 0;
     int betAmount;
     char betstring[7];
     while (checkBid == 0)
         {
-        od_printf("\r\nHow much would you like to bet (enter 0 to cash out)? ");
+        od_set_cursor(22, 1);
+        od_clr_line();
+        od_printf("How much would you like to bet? ");
         od_input_str(betstring,6,'0','9');
         betAmount=atoi(betstring);
+        od_set_cursor(22, 1);
+        od_clr_line();        
         if (betAmount < 0)
-            od_printf("\n\rThat is an incorrect bid");
-        else if (betAmount > *sumT)
+            od_printf("That is an incorrect bid");
+        else if (betAmount > sumT)
             {
-            od_printf("\n\rYour bid is higher than what you have.\n");
+            od_printf("Your bid is higher than what you have.");
             }
         else if (betAmount == 0)
             {
-            if (Plyr.Score<*sumT) Plyr.Score=*sumT;
-            SavePlyr();
-            od_printf("Cash out: $%d.", *sumT);
-            od_printf("\r\n Hope you enjoy monopoly money.");
-            od_printf("\n\rExiting");
-            gameExit(0);
+            od_printf("You've got to bid something!");
             }
         else
             {
-            *sumT = *sumT - betAmount;
             checkBid++;
             }
     }
@@ -339,6 +387,8 @@ void slotPrint(int sum, int betW, int s1, int s2, int s3, int s4, int winPrint)
         default:            //should not happen
             break;
     }
+    od_set_cursor(22, 1);
+    od_clr_line();
     od_set_cursor(22,27);
     switch(winPrint)
     {
@@ -366,8 +416,7 @@ void slotPrint(int sum, int betW, int s1, int s2, int s3, int s4, int winPrint)
     case 8:
         od_printf("Sorry, no winning combination.");
     }
-    goldconvert(sum);
-    od_printf("\n\rYour current total is $%s", comma);
+    
     return ;
 }
 
@@ -551,9 +600,9 @@ void listplayers()          //Creates list to show of other players - Also creat
 {
   int x=1;
   int y=0;
-  int total_records=0;
+  int total_records=get_total_idx();
   struct PlyrRec PlyrInfo;
-  struct PlyrRec Players[30];
+  struct PlyrRec *Players;
   FILE *fptr;
   FILE *fptr2;
   char s[80];
@@ -561,6 +610,9 @@ void listplayers()          //Creates list to show of other players - Also creat
   fptr = fopen(PlyrFile,"rb");
   fptr2 = fopen("slotplyr.txt","w");
   if (!fptr || !fptr2) gameExit(-1);
+
+  Players = (struct PlyrRec *)malloc(sizeof(struct PlyrRec) * total_records);
+
   while (fread(&PlyrInfo, sizeof(struct PlyrRec), 1, fptr) == 1)
   {
       strcpy(Players[y].Name,PlyrInfo.Name);
@@ -575,25 +627,24 @@ void listplayers()          //Creates list to show of other players - Also creat
   centerText(v,78);
   centerTextfile(s,78,fptr2);
   centerTextfile(v,78,fptr2);
-  od_printf("\n\r -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\r\n");
+  od_printf("\r\n -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\r\n");
   fprintf(fptr2,"\r\n -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\r\n");
   od_printf("  Name                                       Score\r\n");
   fprintf(fptr2,"  Name                                       Score\r\n");
   od_printf(" -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\r\n");
   fprintf(fptr2," -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\r\n");
-  if (get_total_idx() > 15) total_records=15;
-  else total_records=get_total_idx();
   bubble_sort(Players,get_total_idx());
-  for (x=0;x<total_records;x++)
+  for (x=0;x<15 && x < total_records;x++)
   {
     od_printf("`blue`  %-42s $%-2s\r\n`white`",Players[x].Name,goldconvert(Players[x].Score));
     fprintf(fptr2,"  %-42s $%-2s\r\n",Players[x].Name,goldconvert(Players[x].Score));
   }
   fclose(fptr);
   fclose(fptr2);
+  free(Players);
 }
 
-void bubble_sort(struct PlyrRec list[80], int s)
+void bubble_sort(struct PlyrRec *list, int s)
 {
     int i, j;
     struct PlyrRec temp;
@@ -642,12 +693,12 @@ int get_player_idx()
         while (!feof(fptr))
         {
             if (strncmp(buffer, savefile, strlen(savefile)) == 0)
-        {
-        fclose(fptr);
-        return idx;
-    }
-    idx++;
-    fgets(buffer, 256, fptr);
+            {
+                fclose(fptr);
+                return idx;
+            }
+        idx++;
+        fgets(buffer, 256, fptr);
     }
     fclose(fptr);
   }
