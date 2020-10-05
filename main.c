@@ -766,7 +766,7 @@ int scan_for_player(char *username, struct PlyrRec *Plyr)
 void SavePlyr()
 {
     #if defined(_MSC_VER) || defined(WIN32)
-    int fno = open("PlyrFile", O_WRONLY | O_CREAT | O_BINARY, 0644);
+    int fno = open(PlyrFile, O_WRONLY | O_CREAT | O_BINARY, 0644);
     #else
     int fno = open(PlyrFile, O_WRONLY | O_CREAT, 0644);
     #endif // defined
