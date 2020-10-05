@@ -8,8 +8,11 @@
 #include <string.h>
 #include <math.h>
 #include <fcntl.h>
+#if !defined(_MSC_VER) && !defined(WIN32)
 #include <unistd.h>
+#endif
 #include <time.h>
+#include <ctype.h>
 #include "numbers.h"
 #include "OpenDoor.h"
 #include "version.h"
@@ -24,7 +27,7 @@ struct PlyrRec Plyr;
 char PlyrFile[15]="player.dat";
 void slot(int* ax, int* bx, int* cx, int* dx);
 void slotPrint(int sum, int bet, int s1, int s2, int s3, int s4, int winPrint);
-int bidMaker(int* sumT);
+int bidMaker(int sumT);
 int slotWinning(int s1, int s2, int s3, int s4, int betA, int* winSum);
 int sumStart(void);
 char* goldconvert(int x);
