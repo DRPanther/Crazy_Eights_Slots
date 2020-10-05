@@ -8,7 +8,9 @@
 #include <string.h>
 #include <math.h>
 #include <fcntl.h>
+#if !defined(_MSC_VER) && !defined(WIN32)
 #include <unistd.h>
+#endif
 #include <time.h>
 #include <ctype.h>
 #include "numbers.h"
