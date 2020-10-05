@@ -2,8 +2,8 @@
 #define VERSION_H
 
 	//Date Version Types
-	static const char DATE[] = "17";
-	static const char MONTH[] = "09";
+	static const char DAY[] = "05";
+	static const char MONTH[] = "10";
 	static const char YEAR[] = "2020";
 	static const char UBUNTU_VERSION_STYLE[] =  "20.09";
 	

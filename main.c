@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
     sprintf(temp,"ver %s",FULLVERSION_STRING);
     od_set_cursor(19,1);
     centerText(temp,78);
-    sprintf(temp,"Compiled %s %s %s",DATE,MONTH,YEAR);
+    sprintf(temp,"Compiled %s %s %s",DAY,MONTH,YEAR);
     od_set_cursor(20,1);
     centerText(temp,78);
     strncpy(Plyr.Name,od_control_get()->user_name, 32);
